@@ -65,10 +65,13 @@ int userCommand;
 
 while(true)
 {
+    Console.ResetColor();
+    Console.WriteLine("\n------------------------------------------------------------------------------------");
     myMatrix.Display();
+
     Console.WriteLine("\nPlease input one of the given numbers to perform a command on your matrix:");
-    Console.WriteLine("1. Reinput Your Entries\n2. Row Reduce\n3. Perform Elementary Operations\n4. Invert the Matrix\n5. Find the Determinant\n" +
-        "6. Scale Your Matrix by a Factor\n7. Clear Your Matrix\n" +
+    Console.WriteLine("1. Reinput Your Entries\n2. Row Reduce\n3. Perform Elementary Row Operations\n4. Invert the Matrix\n5. Find the Determinant\n" +
+        "6. Scale Your Matrix by a Factor\n7. Transpose Your Matrix\n" +
         "8. Make a New Matrix (Discard current one)\n9. Quit the Program");
     Console.ResetColor();
 
@@ -94,6 +97,7 @@ while(true)
             break;
 
         case 3:
+            myMatrix.ElementaryRowOperations();
             break;
 
         case 4:

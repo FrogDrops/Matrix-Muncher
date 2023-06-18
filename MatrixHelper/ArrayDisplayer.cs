@@ -53,7 +53,9 @@ class Matrix
     // Lets the user input entries into their matrix row by row 
     public void EntryInput()
     {
-        Console.WriteLine("\nInsert your entries row by row, separated by a space (decimals are OK).");
+        Console.WriteLine("\n------------------------------------------------------------------------------------");
+        Console.WriteLine("\nInsert your entries row by row, separated by a space (decimals are OK). For example, for a matrix with 3 columns:");
+        Console.WriteLine("ROW 1: 1 5.0 2");
         Console.WriteLine("To exit early, enter 'exit'. To skip to the next row instead, enter 'skip'.\n");
 
         for (int row = 0; row < matrix.GetLength(0); row++)
@@ -94,10 +96,10 @@ class Matrix
                     continue;
                 }
 
-                if(!double.TryParse(entry, out num) || entriesArr.Length > matrix.GetLength(0) || entriesArr.Length < matrix.GetLength(0))
+                if(!double.TryParse(entry, out num) || entriesArr.Length > matrix.GetLength(1) || entriesArr.Length < matrix.GetLength(1))
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Invalid entries / entries are too big");
+                    Console.WriteLine("Invalid entries (The # of entries should correspond to the # of columns)");
                     row--;
                     break;
                 }
@@ -108,8 +110,132 @@ class Matrix
         }
     }
 
+    public void ElementaryRowOperations()
+    {
+        int commandNumber;
+        Console.WriteLine("\n------------------------------------------------------------------------------------");
+
+        while (true)
+        {
+            Console.ResetColor();
+            Display();
+
+            Console.Write("\n1. Swap two rows\n2. Scale a row\n3. Add a multiple of one row to another\n4. Go back to the menu\n\nInput a command number: ");
+            Console.ForegroundColor = ConsoleColor.Green;
+            string userInput = Console.ReadLine()!.Trim();
+
+            if (string.IsNullOrEmpty(userInput) || !int.TryParse(userInput, out commandNumber) || commandNumber > 4 || commandNumber < 0)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Invalid Command Number.");
+                continue;
+            }
+
+            // Go back to the menu
+            if(commandNumber == 4)
+            {
+                break;
+            }
+
+            // Swap two rows
+            else if(commandNumber == 1)
+            {
+                int firstRow;
+                int secondRow;
+                Console.ResetColor();
+
+                Console.Write("\nChoose the first row to swap: ");
+                Console.ForegroundColor = ConsoleColor.Green;
+                userInput = Console.ReadLine()!.Trim();
+
+                if (string.IsNullOrEmpty(userInput) || !int.TryParse(userInput, out firstRow) || firstRow <= 0|| firstRow > matrix.GetLength(0))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Invalid Row Number.");
+                    continue;
+                }
+
+                Console.ResetColor();
+                Console.Write("Choose the second row to swap: ");
+                Console.ForegroundColor = ConsoleColor.Green;
+                userInput = Console.ReadLine()!.Trim();
+
+                if (string.IsNullOrEmpty(userInput) || !int.TryParse(userInput, out secondRow) || secondRow <= 0 || secondRow > matrix.GetLength(0))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Invalid Row Number.");
+                    continue;
+                }
+
+                // Begin swapping the values between the rows (since the rows don't start at 0 for the user, we decrement it by 1 beforehand)
+                double tempVal;
+
+                for(int j = 0; j < matrix.GetLength(1); j++)
+                {
+                    tempVal = matrix[firstRow - 1, j];
+                    matrix[firstRow - 1, j] = matrix[secondRow - 1, j];
+                    matrix[secondRow - 1, j] = tempVal;
+                } 
+            }
+
+            // Scale a row
+            else if(commandNumber == 2) 
+            {
+                int chosenRow;
+                double scalar;
+
+                Console.ResetColor();
+                Console.Write("\nChoose a row to scale: ");
+                Console.ForegroundColor = ConsoleColor.Green;
+                userInput = Console.ReadLine()!.Trim();
+
+                if (string.IsNullOrEmpty(userInput) || !int.TryParse(userInput, out chosenRow) || chosenRow <= 0 || chosenRow > matrix.GetLength(0))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Invalid Row Number.");
+                    continue;
+                }
+
+                Console.ResetColor();
+                Console.Write("Choose a scalar: ");
+                Console.ForegroundColor = ConsoleColor.Green;
+                userInput = Console.ReadLine()!.Trim();
+
+                if (string.IsNullOrEmpty(userInput) || !double.TryParse(userInput, out scalar))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Invalid Scalar.");
+                    continue;
+                }
+
+                for(int j = 0; j < matrix.GetLength(1); j++)
+                {
+                    // Subtract row index by one since it starts at one for the user
+                    if(double.IsInfinity(matrix[chosenRow - 1, j] * scalar))
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Invalid Scalar (Was your input too big?).");
+                        continue;
+
+                    }
+
+                    // We add 0.0 to remove the possibility of getting -0.0
+                    matrix[chosenRow - 1, j] = matrix[chosenRow - 1, j] * scalar + 0.0;
+                }
+            }
+
+            else
+            {
+                break;
+            }
+        }
+    }
+
+    
+
     public void Scale()
     {
+        Console.WriteLine("\n------------------------------------------------------------------------------------");
         Console.ResetColor();
         double scalar;
 
@@ -138,7 +264,8 @@ class Matrix
                     
                 }
 
-                matrix[i, j] = matrix[i, j] * scalar;
+                // We add 0.0 to remove the possibility of getting -0.0
+                matrix[i, j] = matrix[i, j] * scalar + 0.0;
             }
         }
     }
