@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 
 Console.ResetColor();
-Console.WriteLine("\nWelcome to the Matrix Calculator! To get started, input the number of rows and columns you'd like for your matrix!");
+Console.WriteLine("\nWelcome to the Matrix Calculator!\n\nTo get started, input the number of rows and columns you'd like for your matrix!");
 Console.WriteLine("Matrices of up to 10 by 10 size are possible. Make sure your inputs are integers when setting up your matrix size.");
 
 string desiredRows;
@@ -94,6 +94,7 @@ while(true)
             break;
 
         case 2:
+            myMatrix.RowReduce();
             break;
 
         case 3:
@@ -111,8 +112,13 @@ while(true)
             break;
 
         case 7:
+            myMatrix.Transpose();
             break;
+
         case 8:
+            break;
+
+        case 9:
             System.Environment.Exit(0);
             break;
     }
