@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MatrixHelper;
+using static MatrixHelper.Functions;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
@@ -8,15 +10,30 @@ using System.Text.RegularExpressions;
 
 class Matrix
 {
-    int m;
-    int n;
-    double[,] matrix;
+    private int m;
+    private int n;
+    private double[,] matrix;
 
     public Matrix(int numRows, int numCols)
     {
         m = numRows;
         n = numCols;
         matrix = new double[m, n];
+    }
+
+    public int numRows
+    {
+        get { return m; }
+    }
+
+    public int numCols
+    {
+        get { return n; }
+    }
+
+    public double[,] givenMatrix
+    {
+        get { return matrix; }
     }
 
     // Displays the entire matrix to the user
@@ -56,17 +73,25 @@ class Matrix
     {
         Console.ResetColor();
         Console.WriteLine("\n------------------------------------------------------------------------------------");
-        Console.WriteLine($"\nInsert your {matrix.GetLength(1)} entries row by row, separated by a space. Decimals are okay!\nFor example, for a matrix with 3 columns:\n");
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine("ROW 1: 1 5 2.5");
-        Console.ResetColor();
+        Console.WriteLine($"\nInsert your {n} entries row by row, separated by a space. Decimals are okay!\nFor example, for a matrix with 3 columns:\n");
+        Console.WriteLine(" ROW 1: 1 5 2.5");
         Console.WriteLine("\nTo exit early, enter 'exit'. To skip to the next row instead, press enter.\n");
 
-        for (int row = 0; row < matrix.GetLength(0); row++)
+        for (int row = 0; row < m; row++)
         {
             Console.ResetColor();
-            Console.Write($"ROW {row + 1}: ");
 
+            // Accounting for extra space that two-digit numbers take up (The row numbers show up differently to the user by plus 1)
+            if(row < 9)
+            {
+                Console.Write($" ROW {row + 1}: ");
+            }
+
+            else
+            {
+                Console.Write($"ROW {row + 1}: ");
+            }
+            
             Console.ForegroundColor = ConsoleColor.Green;
             string userInput = Console.ReadLine()!.Trim().ToLower();
             Console.ResetColor();
@@ -94,7 +119,7 @@ class Matrix
                     continue;
                 }
 
-                if(!double.TryParse(entry, out num) || entriesArr.Length > matrix.GetLength(1) || entriesArr.Length < matrix.GetLength(1))
+                if(!double.TryParse(entry, out num) || entriesArr.Length > n || entriesArr.Length < n)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Invalid entries (The # of entries should correspond to the # of columns)");
@@ -106,11 +131,6 @@ class Matrix
                 currentCol++;
             }
         }
-    }
-
-    public void RowReduce()
-    {
-        
     }
 
     // Have user themself perform their chosen operations on the matrix
@@ -158,7 +178,7 @@ class Matrix
         }
     }
 
-    // Have the user two rows, called in ElementaryRowOperation()
+    // Swap two rows
     public void SwapRows()
     {
         Console.ResetColor();
@@ -200,7 +220,7 @@ class Matrix
         
     }
 
-    // Scale a single row by a number, called in ElementaryRowOperations()
+    // Scale a single row by a number
     public void RowScale()
     {
         Console.ResetColor();
@@ -255,7 +275,7 @@ class Matrix
         }
     }
 
-    // Add a multiple of one row to another, called in ElementaryRowOperations()
+    // Add a multiple of one row to another
     public void RowMultipleSum()
     {
         string inputPattern = @"^r(\d+)\s([+\-])\s(-?\d+(\.\d+)?)\s\*\sr(\d+)$";
@@ -264,9 +284,7 @@ class Matrix
         Console.WriteLine("\nWrite your operation in this format: r[first row number] [+/-] [scalar] * r[second row number]");
         Console.WriteLine("Make sure to input spaces. If you want to use a fraction as a scalar, enter 'fraction'. \nFor example:\n");
 
-        Console.ForegroundColor = ConsoleColor.Yellow;
         Console.WriteLine("r1 + 3 * r2\nr2 - 2.5 * r1");
-        Console.ResetColor();
 
         Console.WriteLine("\nEnter 'exit' to exit this option.\n");
         Console.Write("Your Operation: ");
@@ -383,16 +401,16 @@ class Matrix
     // Transpose the user's matrix (swap the rows with the columns)
     public void Transpose()
     {
-        if(matrix.GetLength(0) != matrix.GetLength(1))
+        if(m != n)
         {
             Console.WriteLine("\nSince the matrix is not square (amount of rows and columns are the same), it cannot be transposed.");
             return;
 
         }
 
-        for(int i = 0; i < matrix.GetLength(0); i++)
+        for(int i = 0; i < m; i++)
         {
-            for(int j = i + 1; j < matrix.GetLength(0); j++)
+            for(int j = i + 1; j < m; j++)
             {
                 double tempVal = matrix[i, j];
                 matrix[i, j] = matrix[j, i];
