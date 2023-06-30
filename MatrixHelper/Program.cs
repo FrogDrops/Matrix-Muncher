@@ -1,15 +1,12 @@
-﻿using Microsoft.VisualBasic;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using MatrixHelper;
-using System.ComponentModel.DataAnnotations;
-using NAudio.Wave;
 using static MatrixHelper.Functions;
 
-Console.ResetColor();
+// Welcome message!
 Console.ForegroundColor = ConsoleColor.Yellow;
 Console.WriteLine("\r\n\r\n  __  __           _            _                     \r\n |  \\/  |         | |          (_)                    \r\n | \\  / |   __ _  | |_   _ __   _  __  __             \r\n | |\\/| |  / _` | | __| | '__| | | \\ \\/ /             \r\n | |  | | | (_| | | |_  | |    | |  >  <              \r\n |_|  |_|  \\__,_|  \\__| |_|    |_| /_/\\_\\             \r\n  __  __                          _                   \r\n |  \\/  |                        | |                  \r\n | \\  / |  _   _   _ __     ___  | |__     ___   _ __ \r\n | |\\/| | | | | | | '_ \\   / __| | '_ \\   / _ \\ | '__|\r\n | |  | | | |_| | | | | | | (__  | | | | |  __/ | |   \r\n |_|  |_|  \\__,_| |_| |_|  \\___| |_| |_|  \\___| |_|   \r\n                                                      \r\n                                                      \r\n\r\n");
-Console.ResetColor();
+Console.ForegroundColor = ConsoleColor.White;
 Console.WriteLine("\nWelcome to Matrix Muncher!\n\nTo get started, input the number of rows and columns you'd like for your matrix!");
 Console.WriteLine("Matrices of up to 10 by 10 size are possible.");
 
@@ -19,30 +16,19 @@ int numRows;
 int numCols;
 double[,] userMatrix;
 double[,] savedMatrix;
-double[,] secondMatrix;
 
-string songPath = "Within the Matrix.wav";
-WaveOutEvent outputDevice = null;
-bool songPlaying = false;
-
-// Triggers when the song ends 
-void OutputDevice_PlaybackStopped(object sender, StoppedEventArgs e)
-{
-    songPlaying = false;
-}
-
-// Program will loop in case user wants to resize their matrix 
 while (true)
 {
-    // Ask the user their desired number of rows and columns for their matrix
+    // Ask for the user's desired # of rows and columns
     while (true)
     {
-        Console.ResetColor();
+        Console.ForegroundColor = ConsoleColor.White;
 
+        // Rows
         Console.Write("\nNumber of Rows (Vertical): ");
         Console.ForegroundColor = ConsoleColor.Green;
         stringRows = Console.ReadLine()!.Trim();
-        Console.ResetColor();
+        Console.ForegroundColor = ConsoleColor.White;
 
         if (string.IsNullOrEmpty(stringRows) || !int.TryParse(stringRows, out numRows))
         {
@@ -58,10 +44,11 @@ while (true)
             continue;
         }
 
+        // Columns
         Console.Write("Number of Columns (Horizontal): ");
         Console.ForegroundColor = ConsoleColor.Green;
         stringCols = Console.ReadLine()!.Trim();
-        Console.ResetColor();
+        Console.ForegroundColor = ConsoleColor.White;
 
         if (string.IsNullOrEmpty(stringCols) || !int.TryParse(stringCols, out numCols))
         {
@@ -77,36 +64,38 @@ while (true)
             continue;
         }
 
+        // The user's inputs have been validated
         userMatrix = new double[numRows, numCols];
         EntryInput(userMatrix);
 
-        // Will store contents of the user's matrix in case they want to revert
+        // Will store contents of the user's matrix in case they want to revert back
         savedMatrix = (double[,]) userMatrix.Clone();
         Console.WriteLine("\nYour matrix has been saved!");
         break;
     }
 
+    double[,] secondMatrix;
     string stringCommand;
     int userCommand;
     bool looping = true;
 
-    // Main menu where user can perform calculations on their matrix
-    while(looping)
+    // The main menu for the program
+    while (looping)
     {
-        Console.ResetColor();
-        Console.WriteLine("\n------------------------------------------------------------------------------------");
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.WriteLine("\n---------------------------------------------------------------------------------------------------------------");
         Display(userMatrix);
 
         Console.WriteLine("\nPlease input one of the given numbers to perform a command on your matrix:\n");
-        Console.WriteLine("1. Reinput Entries\n2. Row Reduced Form\n3. Row Echelon Form\n4. Perform Elementary Row Operations\n5. Invert\n6. Find Determinant\n" +
+        Console.WriteLine("1. Reenter Entries\n2. Row Reduced Form\n3. Row Echelon Form\n4. Elementary Row Operations\n5. Invert\n6. Determinant\n" +
             "7. Scale Matrix\n8. Transpose\n" +
-            "9. Multiply with Another Matrix\n10. Revert back to your Saved Matrix)\n11. Make a New Matrix (Discard current one)\n12. Play / Stop Song\n13. Quit the Program");
-        Console.ResetColor();
+            "9. Multiply with Another Matrix\n10. Add / Subtract with Another Matrix\n11. Revert back to Saved Matrix\n12. Make a New Matrix (Discard current one)\n13. Quit the Program");
+        Console.ForegroundColor = ConsoleColor.White;
 
         Console.Write("\nYour Command Number: ");
         Console.ForegroundColor = ConsoleColor.Green;
         stringCommand = Console.ReadLine()!.Trim();
-        Console.ResetColor();
+        Console.ForegroundColor = ConsoleColor.White;
 
         if (String.IsNullOrEmpty(stringCommand) || !int.TryParse(stringCommand, out userCommand) || userCommand > 13 || userCommand <= 0)
         {
@@ -170,7 +159,7 @@ while (true)
                 break;
 
             case 9:
-                Console.WriteLine("\n------------------------------------------------------------------------------------");
+                Console.WriteLine("\n---------------------------------------------------------------------------------------------------------------");
                 Console.WriteLine($"\nEnter the entries for your second {numRows} by {numCols} matrix.\n\nYour original matrix will be multiplied with this new matrix.");
                 secondMatrix = new double[numRows, numCols];
                 EntryInput(secondMatrix);
@@ -178,31 +167,20 @@ while (true)
                 break;
 
             case 10:
-                userMatrix = savedMatrix;
+                Console.WriteLine("\n---------------------------------------------------------------------------------------------------------------");
+                Console.WriteLine($"\nEnter the entries for your second {numRows} by {numCols} matrix.\n\nYour original matrix will be summed / subtracted with this new matrix.");
+                secondMatrix = new double[numRows, numCols];
+                EntryInput(secondMatrix);
+                userMatrix = MatrixSum(userMatrix, secondMatrix);
                 break;
 
             case 11:
-                looping = false;
-                Console.WriteLine("\n------------------------------------------------------------------------------------");
+                userMatrix = savedMatrix;
                 break;
 
             case 12:
-                if (songPlaying)
-                {
-                    outputDevice.Stop();
-                    songPlaying = false;
-                }
-                else
-                {
-                    Console.WriteLine("\nLoading...");
-                    outputDevice = new WaveOutEvent(); 
-                    var audioFile = new AudioFileReader(songPath); 
-                    outputDevice.Init(audioFile);
-
-                    outputDevice.PlaybackStopped += OutputDevice_PlaybackStopped;
-                    outputDevice.Play();
-                    songPlaying = true;
-                }
+                looping = false;
+                Console.WriteLine("\n---------------------------------------------------------------------------------------------------------------");
                 break;
 
             case 13:

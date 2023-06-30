@@ -14,34 +14,39 @@ namespace MatrixHelper
         public static void Display(double[,] matrix)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
-            int counter = 1;
+            int numRows = matrix.GetLength(0);
             int numCols = matrix.GetLength(1);
+            int[] maxEntryLengths = new int[numCols];
 
-            Console.Write("\n|    ");
-
-            foreach (double entry in matrix)
+            // Find the maximum length of an entry in each column (to compare with every other entry in that column)
+            for (int col = 0; col < numCols; col++)
             {
-                int numSpaces = 5 - entry.ToString().Length; // Take into account how we space our entries depending on their size to neatly display our matrix
-
-                if (numSpaces <= 0)
+                for (int row = 0; row < numRows; row++)
                 {
-                    numSpaces = 4;
-
+                    int entryLength = matrix[row, col].ToString().Length;
+                    if (entryLength > maxEntryLengths[col])
+                    {
+                        maxEntryLengths[col] = entryLength;
+                    }
                 }
-
-                string repeatedSpace = new string(' ', numSpaces);
-                if (counter > numCols) // We've reached the end of a row 
-                {
-                    Console.Write("|\n\n|    ");
-                    counter = 1;
-                }
-
-                Console.Write($"{entry}" + repeatedSpace);
-                counter++;
             }
 
-            Console.WriteLine("|");
-            Console.ResetColor();
+            // Display the matrix with aligned entries
+            for (int row = 0; row < numRows; row++)
+            {
+                Console.Write("\n|     ");
+                for (int col = 0; col < numCols; col++)
+                {
+                    string entryStr = matrix[row, col].ToString();
+                    int numSpaces = maxEntryLengths[col] - entryStr.Length;
+
+                    // Add extra spaces to align the columns
+                    Console.Write(entryStr + new string(' ', numSpaces + 5));
+                }
+                Console.WriteLine("|");
+            }
+
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
         public static void EntryInput(double[,] matrix)
@@ -49,16 +54,19 @@ namespace MatrixHelper
             int numRows = matrix.GetLength(0);
             int numCols = matrix.GetLength(1);
 
-            Console.ResetColor();
-            Console.WriteLine("\n------------------------------------------------------------------------------------");
-            Console.WriteLine($"\nInsert your {numCols} entries row by row, separated by a space. Entries are 0 by default, and decimals are okay!\nFor example, for a matrix with 3 columns:\n");
-            Console.WriteLine(" ROW 1: 1 5 2.5");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("\n---------------------------------------------------------------------------------------------------------------");
+            Console.WriteLine($"\nInsert your {numCols} entries row by row, separated by a space.\n\nFor example, for a matrix with 3 columns:");
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write("\n ROW 1: ");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("1/2 5 2.5");
             Console.WriteLine("\nTo exit the operation, enter 'exit'. To skip to the next row instead (and leave the current row intact), press enter.\n");
 
 
             for (int row = 0; row < numRows; row++)
             {
-                Console.ResetColor();
+                Console.ForegroundColor = ConsoleColor.Yellow;
 
                 // Accounting for extra space that two-digit numbers take up (The row numbers show up differently to the user by plus 1)
                 if (row < 9)
@@ -73,7 +81,7 @@ namespace MatrixHelper
 
                 Console.ForegroundColor = ConsoleColor.Green;
                 string userInput = Console.ReadLine()!.Trim().ToLower();
-                Console.ResetColor();
+                Console.ForegroundColor = ConsoleColor.White;
 
                 // Skip the row
                 if (String.IsNullOrEmpty(userInput))
@@ -87,7 +95,8 @@ namespace MatrixHelper
                     break;
                 }
 
-                string[] entriesArr = userInput.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries); // Remove the extra spaces in between
+                string[] entriesArr = userInput.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                string fractionPattern = @"^(-?\d+)\/(\d+)$";
                 int currentCol = 0;
                 double num;
 
@@ -98,7 +107,26 @@ namespace MatrixHelper
                         continue;
                     }
 
-                    if (!double.TryParse(entry, out num) || entriesArr.Length > numCols || entriesArr.Length < numCols)
+                    // User inputted a fraction instead
+                    Match match = Regex.Match(entry, fractionPattern);
+
+                    if(match.Success)
+                    {
+                        double num1 = double.Parse(match.Groups[1].Value);
+                        double num2 = double.Parse(match.Groups[2].Value);
+
+                        if(num2 == 0)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Invalid Fraction. You cannot divide by 0 :P");
+                            row--;
+                            break;
+                        }
+
+                        num = num1 / num2;
+                    }
+
+                    else if (!double.TryParse(entry, out num) || entriesArr.Length > numCols || entriesArr.Length < numCols)
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("Invalid entries (The # of entries should correspond to the # of columns)");
@@ -112,17 +140,16 @@ namespace MatrixHelper
             }
         }
 
-        // Have user perform their chosen operations on the matrix
         public static void ElementaryRowOperations(double[,] matrix)
         {
             int commandNumber;
 
-            Console.ResetColor();
-            Console.WriteLine("\n------------------------------------------------------------------------------------");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("\n---------------------------------------------------------------------------------------------------------------");
 
             while (true)
             {
-                Console.ResetColor();
+                Console.ForegroundColor = ConsoleColor.White;
                 Display(matrix);
 
                 Console.Write("\n1. Swap two rows\n2. Scale a row\n3. Add a multiple of one row to another\n4. Go back to the menu\n\nInput a command number: ");
@@ -160,7 +187,7 @@ namespace MatrixHelper
 
         public static void SwapRows(double[,] matrix)
         {
-            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.White;
             int firstRow;
             int secondRow;
             int numRows = matrix.GetLength(0);
@@ -177,7 +204,7 @@ namespace MatrixHelper
                 return;
             }
 
-            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.White;
             Console.Write("Choose the second row to swap: ");
             Console.ForegroundColor = ConsoleColor.Green;
             userInput = Console.ReadLine()!.Trim();
@@ -201,20 +228,19 @@ namespace MatrixHelper
 
         }
         
-        // Scale a single row by a number
         public static void RowScale(double[,] matrix)
         {
-            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.White;
             int chosenRow;
             double scalar;
             int numRows = matrix.GetLength(0);
             int numCols = matrix.GetLength(1);
-            string fractionPattern = @"^(\d+)\/(\d+)$";
+            string fractionPattern = @"^(-?\d+)\/(\d+)$";
 
             Console.Write("\nChoose a row to scale: ");
             Console.ForegroundColor = ConsoleColor.Green;
             string userInput = Console.ReadLine()!.Trim();
-            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.White;
 
             if (!int.TryParse(userInput, out chosenRow) || chosenRow <= 0 || chosenRow > numRows)
             {
@@ -234,6 +260,15 @@ namespace MatrixHelper
             {
                 double num1 = double.Parse(match.Groups[1].Value);
                 double num2 = double.Parse(match.Groups[2].Value);
+
+                if(num2 == 0)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Invalid Fraction. You cannot divide by 0 :P");
+                    return;
+
+                }
+
                 scalar = num1 / num2;
             }
 
@@ -265,7 +300,7 @@ namespace MatrixHelper
             int numCols = matrix.GetLength(1);
             string inputPattern = @"^r(\d+)\s([+\-])\s(-?\d+(\.\d+)?)\s\*\sr(\d+)$";
 
-            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("\nWrite your operation in this format: r[first row number] [+/-] [scalar] * r[second row number]");
             Console.WriteLine("Make sure to input spaces. If you want to use a fraction as a scalar, enter 'fraction'. \nFor example:\n");
 
@@ -276,7 +311,7 @@ namespace MatrixHelper
 
             Console.ForegroundColor = ConsoleColor.Green;
             string userInput = Console.ReadLine()!.Trim().ToLower();
-            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.White;
 
             Match match = Regex.Match(userInput, inputPattern);
 
@@ -333,15 +368,15 @@ namespace MatrixHelper
             }
         }
 
-        // Scale the entire matrix by a number
         public static void Scale(double[,] matrix)
         {
-            Console.WriteLine("\n------------------------------------------------------------------------------------");
-            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("\n---------------------------------------------------------------------------------------------------------------");
+
             int numRows = matrix.GetLength(0);
             int numCols = matrix.GetLength(1);
             double scalar;
-            string fractionPattern = @"^(\d+)\/(\d+)$";
+            string fractionPattern = @"^(-?\d+)\/(\d+)$";
 
             Console.Write("\nInsert the scaling factor to apply to your matrix. You may enter your scalar in fraction form (e.g. 1/3).\n\nYour Scalar: ");
             Console.ForegroundColor = ConsoleColor.Green;
@@ -355,6 +390,14 @@ namespace MatrixHelper
             {
                 double num1 = double.Parse(match.Groups[1].Value);
                 double num2 = double.Parse(match.Groups[2].Value);
+
+                if(num2 == 0)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Invalid Fraction. You cannot divide by 0 :P");
+                    return;
+                }
+
                 scalar = num1 / num2;
             }
 
@@ -383,7 +426,6 @@ namespace MatrixHelper
             }
         }
 
-        // Transpose the user's matrix (swap the rows with the columns)
         public static void Transpose(double[,] matrix)
         {
             int numRows = matrix.GetLength(0);
@@ -406,7 +448,8 @@ namespace MatrixHelper
                 }
             }
         }
-        // restrainedCol describes the column number up to which the operations should be performed (to leave the rest of the matrix intact)
+
+        // restrainedCol describes the column number up to which the operations should be performed
         public static double[,] RowEchelonForm(double[,] matrix, int restrainedCol = 0)
         {
             
@@ -525,6 +568,7 @@ namespace MatrixHelper
         // Done via Gaussian Elimination
         public static void InvertMatrix(double[,] matrix)
         {
+            Console.ForegroundColor = ConsoleColor.White;
             int numRows = matrix.GetLength(0);
             int numCols = matrix.GetLength(1);
 
@@ -576,14 +620,21 @@ namespace MatrixHelper
 
         }
         public static double[,] MatrixMultiply(double[,] matrixA, double[,] matrixB)
-        {
+        {     
             int numRows = matrixA.GetLength(0);
             int numCols = matrixA.GetLength(1);
 
             double[,] resultingMatrix = new double[numRows, numCols];
-    
+
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("\nYour original matrix:");
+            Display(matrixA);
+            Console.WriteLine("\n\nTimes the Second Matrix:");
+            Display(matrixB);
+            Console.WriteLine();
+
             // Matrix only contains one element
-            if(numRows == 1 && numCols == 1)
+            if (numRows == 1 && numCols == 1)
             {
                 if (double.IsInfinity(Math.Pow(matrixA[0, 0], 2)))
                 {
@@ -610,6 +661,57 @@ namespace MatrixHelper
                         }
 
                         resultingMatrix[i, j] += matrixA[i, k] * matrixB[k, j];
+                    }
+                }
+            }
+
+            return resultingMatrix;
+        }
+
+        public static double[,] MatrixSum(double[,] matrixA, double[,] matrixB)
+        {
+            int numRows = matrixA.GetLength(0);
+            int numCols = matrixA.GetLength(1);
+
+            double[,] resultingMatrix = new double[numRows, numCols];
+
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("\n---------------------------------------------------------------------------------------------------------------");
+            Console.WriteLine("\nYour original matrix:");
+            Display(matrixA);
+            Console.WriteLine("\n\nSecond Matrix:");
+            Display(matrixB);
+
+            Console.Write("\nChoose your operation ( + / - ): ");
+            string operation = Console.ReadLine()!.Trim();
+
+            if(operation != "+" && operation != "-")
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Invalid Operation.");
+                return matrixA;
+            }
+
+            for(int i = 0; i < numRows; i++)
+            {
+                for(int j = 0; j < numCols; j++)
+                {
+                    if ((operation == "+" && double.IsInfinity(matrixA[i, j] + matrixB[i, j])) ||
+                    (operation == "-" && double.IsInfinity(matrixA[i, j] - matrixB[i, j])))
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Calculations surpass infinity.");
+                        return matrixA;
+                    }
+
+                    else if (operation == "+")
+                    {
+                        resultingMatrix[i, j] = matrixA[i, j] + matrixB[i, j];
+                    }
+
+                    else
+                    {
+                        resultingMatrix[i, j] = matrixA[i, j] - matrixB[i, j];
                     }
                 }
             }
