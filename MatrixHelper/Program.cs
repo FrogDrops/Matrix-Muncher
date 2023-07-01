@@ -14,6 +14,7 @@ int numCols;
 double[,] userMatrix;
 double[,] savedMatrix;
 string separationBar = "\n---------------------------------------------------------------------------------------------------------------";
+Random rand = new Random();
 
 // Will loop in case the user wants to discard their matrix and start from scratch again
 while (true)
@@ -134,10 +135,14 @@ while (true)
                 break;
 
             case 2:
+                Console.WriteLine(separationBar);
+                Console.WriteLine("\nBOOM! ROW REDUCED!");
                 RowReducedForm(userMatrix);
                 break;
 
             case 3:
+                Console.WriteLine(separationBar);
+                Console.WriteLine("\nEnemy has been brought to Echelon form. I REPEAT, ENEMY HAS BEEN BROUGHT TO ECHELON FORM.");
                 RowEchelonForm(userMatrix);
                 break;
 
@@ -206,9 +211,19 @@ while (true)
             case 12:
                 looping = false;
                 Console.WriteLine(separationBar);
+                Console.WriteLine("\nYour last matrix has been erased from existence. Turned to ashes.");
+                Console.WriteLine(separationBar);
                 break;
 
             case 13:
+                // Say goodbye before terminating
+                string[] farewell = {"\nIt's sad, but sometimes moving on with the rest of your life starts with goodbye.\n\n- Sun Tzu", "\nMy marriage is falling apart", "\nTHAT'S ANOTHER TETRIS FOR JONAS!", "\nSometimes, I pause to look at myself. Then, I really regret it.\n\n - Sun Tzu", "\nOh. I guess this is it then.", "\nIt's been great knowing you, except for the times when it wasn't great knowing you.", "\nOh.", "\nCya!" };
+
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                int randomQuote = rand.Next(0, farewell.Length);
+                Console.WriteLine(farewell[randomQuote]);
+
+                Console.ForegroundColor = ConsoleColor.White;
                 System.Environment.Exit(0);
                 break;
         }

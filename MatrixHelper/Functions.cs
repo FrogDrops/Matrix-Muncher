@@ -474,7 +474,7 @@ namespace MatrixMuncher
             }
 
             Console.WriteLine(separationBar);
-            Console.WriteLine("\nYour matrix has been transposed!");
+            Console.WriteLine("\nYour matrix has been transposed! :O");
         }
 
         /* restrainedCol describes the column number up to which the operations should be performed (useful for inverting the matrix)
@@ -525,7 +525,8 @@ namespace MatrixMuncher
 
                         for(int j = col; j < numCols; j++)
                         {
-                            matrix[row, j] -= scaleFactor * matrix[col, j] + 0.0;
+                            matrix[row, j] -= scaleFactor * matrix[col, j];
+                            matrix[row, j] += 0.0;
                         }
                     }
                 }
@@ -569,6 +570,7 @@ namespace MatrixMuncher
                 for(int j = col; j < numCols; j++)
                 {
                     matrix[pivotRow, j] /= pivotElement;
+                    matrix[pivotRow, j] += 0.0;
                 }
 
                 // Make all the other elements above the pivot element 0 (and carry the change across the affected row)
@@ -581,7 +583,7 @@ namespace MatrixMuncher
 
                         for (int j = col; j < numCols; j++)
                         {
-                            matrix[row, j] = matrix[row, j] - scaleFactor * matrix[pivotRow, j] + 0.0;
+                            matrix[row, j] = matrix[row, j] - scaleFactor * matrix[pivotRow, j];
                         }
                     }
                 }
@@ -661,7 +663,7 @@ namespace MatrixMuncher
             }
 
             Console.WriteLine(separationBar);
-            Console.WriteLine($"\nYour matrix has been inverted!");
+            Console.WriteLine($"\nMatrix has been inverted! ＼(^o^)／");
         }
 
         // Matrix multiplication is not commutative. It will always be performed in this order: Matrix A x Matrix B
