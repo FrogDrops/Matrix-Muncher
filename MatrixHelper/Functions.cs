@@ -1,24 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Transactions;
-using MatrixHelper;
+﻿using System.Text.RegularExpressions;
 
-namespace MatrixHelper
+namespace MatrixMuncher
 {
     class Functions
     {
-        public static void Display(double[,] matrix)
+        static string separationBar = "\n---------------------------------------------------------------------------------------------------------------";
+        public static void DisplayMatrix(double[,] matrix)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
             int numRows = matrix.GetLength(0);
             int numCols = matrix.GetLength(1);
             int[] maxEntryLengths = new int[numCols];
 
-            // Find the maximum length of an entry in each column (to compare with every other entry in that column)
+            // Find the maximum length of an entry in each column (to compare later with every other entry in that column)
             for (int col = 0; col < numCols; col++)
             {
                 for (int row = 0; row < numRows; row++)
@@ -49,13 +43,13 @@ namespace MatrixHelper
             Console.ForegroundColor = ConsoleColor.White;
         }
 
-        public static void EntryInput(double[,] matrix)
+        public static void InputEntries(double[,] matrix)
         {
             int numRows = matrix.GetLength(0);
             int numCols = matrix.GetLength(1);
 
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("\n---------------------------------------------------------------------------------------------------------------");
+            Console.WriteLine(separationBar);
             Console.WriteLine($"\nInsert your {numCols} entries row by row, separated by a space.\n\nFor example, for a matrix with 3 columns:");
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Write("\n ROW 1: ");
@@ -86,6 +80,7 @@ namespace MatrixHelper
                 // Skip the row
                 if (String.IsNullOrEmpty(userInput))
                 {
+                    Console.WriteLine();
                     continue;
                 }
 
@@ -118,7 +113,7 @@ namespace MatrixHelper
                         if(num2 == 0)
                         {
                             Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine("Invalid Fraction. You cannot divide by 0 :P");
+                            Console.WriteLine(" Invalid Fraction. You cannot divide by 0 :P");
                             row--;
                             break;
                         }
@@ -129,7 +124,7 @@ namespace MatrixHelper
                     else if (!double.TryParse(entry, out num) || entriesArr.Length > numCols || entriesArr.Length < numCols)
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("Invalid entries (The # of entries should correspond to the # of columns)");
+                        Console.WriteLine(" Invalid entries (The # of entries should correspond to the # of columns)");
                         row--;
                         break;
                     }
@@ -137,20 +132,26 @@ namespace MatrixHelper
                     matrix[row, currentCol] = num;
                     currentCol++;
                 }
+
+                Console.WriteLine();
             }
         }
 
+        /*
+         * A "mini-menu" where the user can perform one of three elementary operations on their matrix (with their own functions):
+         * 1. Swap two rows
+         * 2. Scale a row by a factor
+         * 3. Add a multiple of one row to another row
+         */
         public static void ElementaryRowOperations(double[,] matrix)
         {
             int commandNumber;
 
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("\n---------------------------------------------------------------------------------------------------------------");
-
             while (true)
             {
                 Console.ForegroundColor = ConsoleColor.White;
-                Display(matrix);
+                Console.WriteLine(separationBar);
+                DisplayMatrix(matrix);
 
                 Console.Write("\n1. Swap two rows\n2. Scale a row\n3. Add a multiple of one row to another\n4. Go back to the menu\n\nInput a command number: ");
                 Console.ForegroundColor = ConsoleColor.Green;
@@ -216,7 +217,7 @@ namespace MatrixHelper
                 return;
             }
 
-            // Begin swapping the values between the rows (since the rows don't start at 0 for the user, we decrement it by 1 beforehand)
+            // Begin swapping the values between the rows (user assumes rows start at 1)
             double tempVal;
 
             for (int j = 0; j < numCols; j++)
@@ -279,6 +280,7 @@ namespace MatrixHelper
                 return;
             }
 
+            // User inputted a valid scalar (that's not a fraction)
             for (int j = 0; j < numCols; j++)
             {
                 // Subtract row index by one since it starts at one for the user
@@ -293,20 +295,17 @@ namespace MatrixHelper
             }
         }
 
-        // Add a multiple of one row to another
         public static void RowMultipleSum(double[,] matrix)
         {
             int numRows = matrix.GetLength(0);
             int numCols = matrix.GetLength(1);
-            string inputPattern = @"^r(\d+)\s([+\-])\s(-?\d+(\.\d+)?)\s\*\sr(\d+)$";
+            string inputPattern = @"^r(\d+)\s([+\-])\s(-?\d+(\.\d+)?|\d+/\d+)\s\*\sr(\d+)$";
+            string fractionPattern = @"^(-?\d+(\.\d+)?)/(\d+)$";
 
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("\nWrite your operation in this format: r[first row number] [+/-] [scalar] * r[second row number]");
-            Console.WriteLine("Make sure to input spaces. If you want to use a fraction as a scalar, enter 'fraction'. \nFor example:\n");
-
-            Console.WriteLine("r1 + 3 * r2\nr2 - 2.5 * r1");
-
-            Console.WriteLine("\nEnter 'exit' to exit this option.\n");
+            Console.WriteLine("Spaces are important, and fractions are okay for scalars! This operation will affect the first row number." +
+                "\n\nEnter 'exit' to exit this option.\n");
             Console.Write("Your Operation: ");
 
             Console.ForegroundColor = ConsoleColor.Green;
@@ -329,8 +328,33 @@ namespace MatrixHelper
 
             int firstRow = int.Parse(match.Groups[1].Value);
             string sign = match.Groups[2].Value;
-            double scalar = double.Parse(match.Groups[3].Value);
+            string stringScalar = match.Groups[3].Value;
+            double scalar;
             int secondRow = int.Parse(match.Groups[5].Value);
+
+            Match fractionMatch = Regex.Match(stringScalar, fractionPattern);
+
+            // If user chose a fraction as their scalar
+            if(fractionMatch.Success)
+            {
+                double numerator = double.Parse(fractionMatch.Groups[1].Value);
+                double denominator = double.Parse(fractionMatch.Groups[3].Value);
+
+                if(denominator == 0)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Invalid Fraction. You cannot divide by 0 :P");
+                    return;
+                }
+
+                scalar = numerator / denominator;
+            }
+
+            else
+            {
+                scalar = double.Parse(stringScalar);
+
+            }
 
             if (firstRow <= 0 || firstRow > numRows || secondRow <= 0 || secondRow > numRows || firstRow == secondRow)
             {
@@ -368,17 +392,17 @@ namespace MatrixHelper
             }
         }
 
-        public static void Scale(double[,] matrix)
+        public static void ScaleMatrix(double[,] matrix)
         {
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("\n---------------------------------------------------------------------------------------------------------------");
+            Console.WriteLine(separationBar);
 
             int numRows = matrix.GetLength(0);
             int numCols = matrix.GetLength(1);
             double scalar;
             string fractionPattern = @"^(-?\d+)\/(\d+)$";
 
-            Console.Write("\nInsert the scaling factor to apply to your matrix. You may enter your scalar in fraction form (e.g. 1/3).\n\nYour Scalar: ");
+            Console.Write("\nChoose a scalar (Fractions okay!): ");
             Console.ForegroundColor = ConsoleColor.Green;
             string userInput = Console.ReadLine()!.Trim();
             Console.ResetColor();
@@ -433,6 +457,7 @@ namespace MatrixHelper
 
             if (numRows != numCols)
             {
+                Console.WriteLine(separationBar);
                 Console.WriteLine("\nSince the matrix is not square (amount of rows and columns are the same), it cannot be transposed.");
                 return;
 
@@ -447,9 +472,12 @@ namespace MatrixHelper
                     matrix[j, i] = tempVal;
                 }
             }
+
+            Console.WriteLine(separationBar);
+            Console.WriteLine("\nYour matrix has been transposed!");
         }
 
-        // restrainedCol describes the column number up to which the operations should be performed
+        // restrainedCol describes the column number up to which the operations should be performed (useful for inverting the matrix)
         public static double[,] RowEchelonForm(double[,] matrix, int restrainedCol = 0)
         {
             
@@ -498,6 +526,7 @@ namespace MatrixHelper
 
         public static double[,] RowReducedForm(double[,] matrix, int restrainedCol = 0)
         {
+            // The first half of our work is done here
             matrix = RowEchelonForm(matrix, restrainedCol);
 
             int numRows = matrix.GetLength(0);
@@ -575,10 +604,12 @@ namespace MatrixHelper
             // Make sure the matrix is invertible first
             if(numRows != numCols || Determinant(matrix) == 0)
             {
+                Console.WriteLine(separationBar);
                 Console.WriteLine("\nSince the determinant of the matrix is 0, its inverse does not exist.");
                 return;
             }
 
+            // Transfer info from the user's matrix to our new matrix
             double[,] augmentedMatrix = new double[numRows, numCols * 2];
 
             for (int row = 0; row < numRows; row++)
@@ -589,7 +620,7 @@ namespace MatrixHelper
                 }
             }
 
-            // Augment with identity matrix
+            // Augment our new matrix with its identity matrix
             for (int row = 0; row < numRows; row++)
             {
                 for (int col = numCols; col < augmentedMatrix.GetLength(1); col++)
@@ -609,16 +640,21 @@ namespace MatrixHelper
 
            augmentedMatrix = RowReducedForm(augmentedMatrix, numCols);
 
-            // Right half of augmented matrix contains the inverse of the original matrix
+            // Right half of row-reduced augmented matrix contains the inverse of the original matrix
             for(int row = 0; row < numRows; row++)
             {
                 for(int col = 0; col < numCols; col++)
                 {
-                    matrix[row, col] = augmentedMatrix[row, col + numCols];
+                    // Truncate anything past five decimal places
+                    matrix[row, col] = Math.Floor(augmentedMatrix[row, col + numCols] * 100000) / 100000;
                 }
             }
 
+            Console.WriteLine(separationBar);
+            Console.WriteLine($"\nYour matrix has been inverted!");
         }
+
+        // Matrix multiplication is not commutative. It will always be performed in this order: Matrix A x Matrix B
         public static double[,] MatrixMultiply(double[,] matrixA, double[,] matrixB)
         {     
             int numRows = matrixA.GetLength(0);
@@ -628,9 +664,9 @@ namespace MatrixHelper
 
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("\nYour original matrix:");
-            Display(matrixA);
+            DisplayMatrix(matrixA);
             Console.WriteLine("\n\nTimes the Second Matrix:");
-            Display(matrixB);
+            DisplayMatrix(matrixB);
             Console.WriteLine();
 
             // Matrix only contains one element
@@ -676,11 +712,11 @@ namespace MatrixHelper
             double[,] resultingMatrix = new double[numRows, numCols];
 
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("\n---------------------------------------------------------------------------------------------------------------");
+            Console.WriteLine(separationBar);
             Console.WriteLine("\nYour original matrix:");
-            Display(matrixA);
+            DisplayMatrix(matrixA);
             Console.WriteLine("\n\nSecond Matrix:");
-            Display(matrixB);
+            DisplayMatrix(matrixB);
 
             Console.Write("\nChoose your operation ( + / - ): ");
             string operation = Console.ReadLine()!.Trim();
@@ -692,6 +728,7 @@ namespace MatrixHelper
                 return matrixA;
             }
 
+            // Begin summation / subtraction between two matrices
             for(int i = 0; i < numRows; i++)
             {
                 for(int j = 0; j < numCols; j++)

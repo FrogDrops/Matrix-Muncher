@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using MatrixHelper;
-using static MatrixHelper.Functions;
+﻿using static MatrixMuncher.Functions;
 
 // Welcome message!
 Console.ForegroundColor = ConsoleColor.Yellow;
-Console.WriteLine("\r\n\r\n  __  __           _            _                     \r\n |  \\/  |         | |          (_)                    \r\n | \\  / |   __ _  | |_   _ __   _  __  __             \r\n | |\\/| |  / _` | | __| | '__| | | \\ \\/ /             \r\n | |  | | | (_| | | |_  | |    | |  >  <              \r\n |_|  |_|  \\__,_|  \\__| |_|    |_| /_/\\_\\             \r\n  __  __                          _                   \r\n |  \\/  |                        | |                  \r\n | \\  / |  _   _   _ __     ___  | |__     ___   _ __ \r\n | |\\/| | | | | | | '_ \\   / __| | '_ \\   / _ \\ | '__|\r\n | |  | | | |_| | | | | | | (__  | | | | |  __/ | |   \r\n |_|  |_|  \\__,_| |_| |_|  \\___| |_| |_|  \\___| |_|   \r\n                                                      \r\n                                                      \r\n\r\n");
+Console.WriteLine("\r\n\r\n  __  __           _            _                     \r\n |  \\/  |         | |          (_)                    \r\n | \\  / |   __ _  | |_   _ __   _  __  __             \r\n | |\\/| |  / _` | | __| | '__| | | \\ \\/ /             \r\n | |  | | | (_| | | |_  | |    | |  >  <              \r\n |_|  |_|  \\__,_|  \\__| |_|    |_| /_/\\_\\             \r\n  __  __                          _                   \r\n |  \\/  |                        | |                  \r\n | \\  / |  _   _   _ __     ___  | |__     ___   _ __ \r\n | |\\/| | | | | | | '_ \\   / __| | '_ \\   / _ \\ | '__|\r\n | |  | | | |_| | | | | | | (__  | | | | |  __/ | |   \r\n |_|  |_|  \\__,_| |_| |_|  \\___| |_| |_|  \\___| |_|   \r\n                                                      \r\n                                                      \r");
 Console.ForegroundColor = ConsoleColor.White;
-Console.WriteLine("\nWelcome to Matrix Muncher!\n\nTo get started, input the number of rows and columns you'd like for your matrix!");
-Console.WriteLine("Matrices of up to 10 by 10 size are possible.");
+Console.WriteLine("\nWelcome to Matrix Muncher!\n\nTo get started, input the number of rows and columns you'd like for your matrix!" +
+    "\nMatrices of up to 10 by 10 size are possible.");
 
 string stringRows;
 string stringCols;
@@ -16,7 +13,9 @@ int numRows;
 int numCols;
 double[,] userMatrix;
 double[,] savedMatrix;
+string separationBar = "\n---------------------------------------------------------------------------------------------------------------";
 
+// Will loop in case the user wants to discard their matrix and start from scratch again
 while (true)
 {
     // Ask for the user's desired # of rows and columns
@@ -64,12 +63,13 @@ while (true)
             continue;
         }
 
-        // The user's inputs have been validated
+        // The user's size inputs have been validated 
         userMatrix = new double[numRows, numCols];
-        EntryInput(userMatrix);
+        InputEntries(userMatrix);
 
         // Will store contents of the user's matrix in case they want to revert back
         savedMatrix = (double[,]) userMatrix.Clone();
+        Console.WriteLine(separationBar);
         Console.WriteLine("\nYour matrix has been saved!");
         break;
     }
@@ -83,13 +83,23 @@ while (true)
     while (looping)
     {
         Console.ForegroundColor = ConsoleColor.White;
-        Console.WriteLine("\n---------------------------------------------------------------------------------------------------------------");
-        Display(userMatrix);
+        Console.WriteLine(separationBar);
+        DisplayMatrix(userMatrix);
 
-        Console.WriteLine("\nPlease input one of the given numbers to perform a command on your matrix:\n");
-        Console.WriteLine("1. Reenter Entries\n2. Row Reduced Form\n3. Row Echelon Form\n4. Elementary Row Operations\n5. Invert\n6. Determinant\n" +
-            "7. Scale Matrix\n8. Transpose\n" +
-            "9. Multiply with Another Matrix\n10. Add / Subtract with Another Matrix\n11. Revert back to Saved Matrix\n12. Make a New Matrix (Discard current one)\n13. Quit the Program");
+        Console.WriteLine("\nPlease input one of the given numbers to perform a command on your matrix:\n\n" +
+            "1. Reenter Entries\n" +
+            "2. Row Reduced Form\n" +
+            "3. Row Echelon Form\n" +
+            "4. Elementary Row Operations\n" +
+            "5. Invert\n" +
+            "6. Determinant\n" +
+            "7. Scale Matrix\n" +
+            "8. Transpose\n" +
+            "9. Multiply with Another Matrix\n" +
+            "10. Add / Subtract with Another Matrix\n" +
+            "11. Revert back to Saved Matrix\n" +
+            "12. Make a New Matrix (Discard current one)\n" +
+            "13. Quit the Program");
         Console.ForegroundColor = ConsoleColor.White;
 
         Console.Write("\nYour Command Number: ");
@@ -107,8 +117,9 @@ while (true)
         switch (userCommand)
         {
             case 1:
-                EntryInput(userMatrix);
+                InputEntries(userMatrix);
                 savedMatrix = (double[,])userMatrix.Clone();
+                Console.WriteLine(separationBar);
                 Console.WriteLine("\nYour matrix has been resaved!");
                 break;
 
@@ -131,6 +142,7 @@ while (true)
             case 6:
                 if (numRows != numCols)
                 {
+                    Console.WriteLine(separationBar);
                     Console.WriteLine("\nSince the matrix is not square (amount of rows and columns are the same), the determinant does not exist.");
 
                 }
@@ -145,13 +157,14 @@ while (true)
                         singularState = "singular";
                     }
 
+                    Console.WriteLine(separationBar);
                     Console.WriteLine($"\nThe determinant of your matrix is {determinant}. It is {singularState}.");
                 }
 
                 break;
 
             case 7:
-                Scale(userMatrix);
+                ScaleMatrix(userMatrix);
                 break;
 
             case 8:
@@ -159,18 +172,18 @@ while (true)
                 break;
 
             case 9:
-                Console.WriteLine("\n---------------------------------------------------------------------------------------------------------------");
+                Console.WriteLine(separationBar);
                 Console.WriteLine($"\nEnter the entries for your second {numRows} by {numCols} matrix.\n\nYour original matrix will be multiplied with this new matrix.");
                 secondMatrix = new double[numRows, numCols];
-                EntryInput(secondMatrix);
+                InputEntries(secondMatrix);
                 userMatrix = MatrixMultiply(userMatrix, secondMatrix);
                 break;
 
             case 10:
-                Console.WriteLine("\n---------------------------------------------------------------------------------------------------------------");
+                Console.WriteLine(separationBar);
                 Console.WriteLine($"\nEnter the entries for your second {numRows} by {numCols} matrix.\n\nYour original matrix will be summed / subtracted with this new matrix.");
                 secondMatrix = new double[numRows, numCols];
-                EntryInput(secondMatrix);
+                InputEntries(secondMatrix);
                 userMatrix = MatrixSum(userMatrix, secondMatrix);
                 break;
 
@@ -180,7 +193,7 @@ while (true)
 
             case 12:
                 looping = false;
-                Console.WriteLine("\n---------------------------------------------------------------------------------------------------------------");
+                Console.WriteLine(separationBar);
                 break;
 
             case 13:

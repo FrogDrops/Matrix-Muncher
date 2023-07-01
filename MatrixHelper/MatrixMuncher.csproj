@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Within the Matrix.wav" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="NAudio" Version="2.1.0" />
     <PackageReference Include="System.Windows.Extensions" Version="7.0.0" />
   </ItemGroup>
