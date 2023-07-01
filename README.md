@@ -1,0 +1,22 @@
+# Matrix-Muncher
+A C# console application that serves as a lightweight matrix calculator for all your linear algebra needs!
+
+![muncher](https://github.com/FrogDrops/Matrix-Muncher/assets/130423129/fae1fbe0-9931-448e-9058-326dde1a1d86)
+
+Matrix Muncher allows you to quickly perform operations and undo changes on your matrix as needed. It is focused on being both lenient with
+your inputs while also letting you make quick, back-to-back modifications on your matrix without wasting your time.
+
+It has the following features:
+- Can put your matrix in either row reduced or row-echelon form
+- Can invert and transpose your matrix
+- Can provide the determinant of the matrix
+- Can perform matrix multiplication, addition, and subtraction
+- Can perform any of the three elementary row operations on the matrix, one at a time
+- Can discard your matrix for a new one, change your entries, and save your matrix on a whim
+- Can revert your matrix back to a previously saved state in case you change your mind
+- Can also be goofy in some occasions!
+
+Additionally, it is very much fraction and decimal friendly!
+
+![matrices](https://github.com/FrogDrops/Matrix-Muncher/assets/130423129/f428e296-9d36-4f05-87da-ac8947863ca7)
+
