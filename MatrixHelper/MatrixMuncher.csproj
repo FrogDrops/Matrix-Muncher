@@ -7,8 +7,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Within the Matrix.wav" />
-  </ItemGroup>
-
 </Project>
