@@ -1,4 +1,5 @@
 # Matrix-Muncher
+
 A C# console application that serves as a lightweight matrix calculator for all your linear algebra needs!
 
 ![muncher](https://github.com/FrogDrops/Matrix-Muncher/assets/130423129/45343e0d-e2c2-44bc-9dc3-4479ea7c5c97)
@@ -21,4 +22,4 @@ Additionally, it is very much fraction and decimal friendly!
 
 ![matrices](https://github.com/FrogDrops/Matrix-Muncher/assets/130423129/e0b9c50e-2554-43b1-809f-fc434a10307b)
 
-
+# [Download Release v1.0](https://github.com/FrogDrops/Matrix-Muncher/releases/tag/v1.0)
