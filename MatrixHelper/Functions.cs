@@ -129,7 +129,7 @@ namespace MatrixMuncher
                         break;
                     }
 
-                    matrix[row, currentCol] = num;
+                    matrix[row, currentCol] = num + 0.0;
                     currentCol++;
                 }
 
@@ -250,7 +250,7 @@ namespace MatrixMuncher
                 return;
             }
 
-            Console.Write("Choose a scalar. You may enter your scalar in fraction form (e.g. 1/3).\n\nYour Scalar: ");
+            Console.Write("Choose a scalar (Fractions okay!): ");
             Console.ForegroundColor = ConsoleColor.Green;
             userInput = Console.ReadLine()!.Trim();
 
@@ -259,10 +259,10 @@ namespace MatrixMuncher
             // User entered a fraction instead
             if (match.Success)
             {
-                double num1 = double.Parse(match.Groups[1].Value);
-                double num2 = double.Parse(match.Groups[2].Value);
+                double numerator = double.Parse(match.Groups[1].Value);
+                double denominator = double.Parse(match.Groups[2].Value);
 
-                if(num2 == 0)
+                if(denominator == 0)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Invalid Fraction. You cannot divide by 0 :P");
@@ -270,7 +270,7 @@ namespace MatrixMuncher
 
                 }
 
-                scalar = num1 / num2;
+                scalar = numerator / denominator;
             }
 
             else if (!double.TryParse(userInput, out scalar))
@@ -412,17 +412,17 @@ namespace MatrixMuncher
             // User entered a fraction instead
             if (match.Success)
             {
-                double num1 = double.Parse(match.Groups[1].Value);
-                double num2 = double.Parse(match.Groups[2].Value);
+                double numerator = double.Parse(match.Groups[1].Value);
+                double denominator = double.Parse(match.Groups[2].Value);
 
-                if(num2 == 0)
+                if(denominator == 0)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Invalid Fraction. You cannot divide by 0 :P");
                     return;
                 }
 
-                scalar = num1 / num2;
+                scalar = numerator / denominator;
             }
 
             else if (!double.TryParse(userInput, out scalar))
@@ -477,57 +477,67 @@ namespace MatrixMuncher
             Console.WriteLine("\nYour matrix has been transposed!");
         }
 
-        // restrainedCol describes the column number up to which the operations should be performed (useful for inverting the matrix)
-        public static double[,] RowEchelonForm(double[,] matrix, int restrainedCol = 0)
+        /* restrainedCol describes the column number up to which the operations should be performed (useful for inverting the matrix)
+         * We employ the technique of partial pivoting to reduce our matrix
+         */
+        public static (double[,], int) RowEchelonForm(double[,] matrix, int restrainedCol = 0)
         {
             
             int numRows = matrix.GetLength(0);
             int numCols = matrix.GetLength(1);
+            int determinantChange = 1;
+            // Keep in mind the determinant changes every time we swap rows
 
-            for(int col = 0; col < numCols - restrainedCol; col++)
+            for (int col = 0; col < numCols - restrainedCol; col++)
             {
-                int? pivotRow = null;
+                int pivotRow = col;
 
-                for (int row = col; row < numRows; row++)
+                for (int row = col + 1; row < numRows; row++)
                 {
-                    // Non-zero pivot row found
-                    if (matrix[row, col] != 0)
+                    // Find the row with the largest absolute value in the current column
+                    if (Math.Abs(matrix[row, col]) > Math.Abs(matrix[pivotRow, col]))
                     {
                         pivotRow = row;
-                        break;
-                    }    
+                    }
                 }
 
-                // Pivot element not found in the first column, move on
-                if (!pivotRow.HasValue)
+                // Swap the rows so that the pivot element is in the current row
+                if (pivotRow != col)
                 {
-                    continue;
+                    for (int j = col; j < numCols; j++)
+                    {
+                        double temp = matrix[col, j];
+                        matrix[col, j] = matrix[pivotRow, j];
+                        matrix[pivotRow, j] = temp;
+                    }
+
+                    determinantChange *= -1;
                 }
 
                 // Make all the other elements below the pivot element 0 (and carry the change across the affected row)
                 double scaleFactor;
 
-                for (int row = (int)pivotRow + 1; row < numRows; row++)
+                for (int row = col + 1; row < numRows; row++)
                 {
                     if (matrix[row, col] != 0)
                     {
-                        scaleFactor = matrix[row, col] / matrix[(int)pivotRow, col];
+                        scaleFactor = matrix[row, col] / matrix[col, col];
 
                         for(int j = col; j < numCols; j++)
                         {
-                            matrix[row, j] = matrix[row, j] - scaleFactor * matrix[(int)pivotRow, j];
+                            matrix[row, j] -= scaleFactor * matrix[col, j] + 0.0;
                         }
                     }
                 }
             }
 
-            return matrix;
+            return (matrix, determinantChange);
         }
 
         public static double[,] RowReducedForm(double[,] matrix, int restrainedCol = 0)
         {
             // The first half of our work is done here
-            matrix = RowEchelonForm(matrix, restrainedCol);
+            (matrix, int determinantChange) = RowEchelonForm(matrix, restrainedCol);
 
             int numRows = matrix.GetLength(0);
             int numCols = matrix.GetLength(1);
@@ -555,15 +565,15 @@ namespace MatrixMuncher
                 }
 
                 // Divide the entire pivot row so that the pivot element is equal to 1
-                pivotElement = matrix[(int)pivotRow, col];
+                pivotElement = matrix[pivotRow, col];
                 for(int j = col; j < numCols; j++)
                 {
-                    matrix[(int)pivotRow, j] /= pivotElement;
+                    matrix[pivotRow, j] /= pivotElement;
                 }
 
                 // Make all the other elements above the pivot element 0 (and carry the change across the affected row)
                 double scaleFactor;
-                for (int row = (int)pivotRow - 1; row >= 0; row--)
+                for (int row = pivotRow - 1; row >= 0; row--)
                 {
                     if (matrix[row, col] != 0)
                     {
@@ -571,7 +581,7 @@ namespace MatrixMuncher
 
                         for (int j = col; j < numCols; j++)
                         {
-                            matrix[row, j] = matrix[row, j] - scaleFactor * matrix[(int)pivotRow, j];
+                            matrix[row, j] = matrix[row, j] - scaleFactor * matrix[pivotRow, j] + 0.0;
                         }
                     }
                 }
@@ -583,8 +593,8 @@ namespace MatrixMuncher
         public static double Determinant(double[,] matrix)
         {
             // We don't want to change the user's matrix, only use it as a reference
-            double[,] reducedMatrix = RowEchelonForm((double[,])matrix.Clone());
-            double determinant = 1;
+            (double[,] reducedMatrix, int determinantChange) = RowEchelonForm((double[,])matrix.Clone());
+            double determinant = 1 * determinantChange;
 
             for (int i = 0; i < reducedMatrix.GetLength(0); i++)
             {
@@ -663,6 +673,7 @@ namespace MatrixMuncher
             double[,] resultingMatrix = new double[numRows, numCols];
 
             Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(separationBar);
             Console.WriteLine("\nYour original matrix:");
             DisplayMatrix(matrixA);
             Console.WriteLine("\n\nTimes the Second Matrix:");
@@ -672,14 +683,14 @@ namespace MatrixMuncher
             // Matrix only contains one element
             if (numRows == 1 && numCols == 1)
             {
-                if (double.IsInfinity(Math.Pow(matrixA[0, 0], 2)))
+                if (double.IsInfinity(matrixA[0, 0] * matrixB[0, 0]))
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Calculations surpass infinity. ");
                     return matrixA;
                 }
 
-                resultingMatrix[0, 0] = Math.Pow(matrixA[0, 0], 2);
+                resultingMatrix[0, 0] = matrixA[0, 0] * matrixB[0, 0];
                 return resultingMatrix;
             }
 

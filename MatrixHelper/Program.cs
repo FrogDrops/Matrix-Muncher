@@ -87,7 +87,7 @@ while (true)
         DisplayMatrix(userMatrix);
 
         Console.WriteLine("\nPlease input one of the given numbers to perform a command on your matrix:\n\n" +
-            "1. Reenter Entries\n" +
+            "1. Reenter Entries (And Save It)\n" +
             "2. Row Reduced Form\n" +
             "3. Row Echelon Form\n" +
             "4. Elementary Row Operations\n" +
@@ -104,8 +104,18 @@ while (true)
 
         Console.Write("\nYour Command Number: ");
         Console.ForegroundColor = ConsoleColor.Green;
-        stringCommand = Console.ReadLine()!.Trim();
+        stringCommand = Console.ReadLine()!.Trim().ToLower();
         Console.ForegroundColor = ConsoleColor.White;
+
+        // Congratulate them on their birthday :D
+        if(stringCommand == "it's my birthday" || stringCommand == "it's my birthday!")
+        {
+            Console.WriteLine(separationBar);
+            Console.WriteLine("\n                0   0\r\n                |   |\r\n            ____|___|____\r\n         0  |~ ~ ~ ~ ~ ~|   0\r\n         |  |           |   |\r\n      ___|__|___________|___|__\r\n      |/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/|\r\n  0   |       H a p p y       |   0\r\n  |   |/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/|   |\r\n _|___|_______________________|___|__\r\n|/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/|\r\n|                                   |\r\n|         B i r t h d a y! ! !      |\r\n| ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ |\r\n|___________________________________|\r\n");
+            Console.WriteLine("Here's to another year! Matrix Muncher wishes you well! :D\n\n(Press any key to continue)\n");
+            Console.ReadKey();
+            continue;
+        }
 
         if (String.IsNullOrEmpty(stringCommand) || !int.TryParse(stringCommand, out userCommand) || userCommand > 13 || userCommand <= 0)
         {
@@ -118,7 +128,7 @@ while (true)
         {
             case 1:
                 InputEntries(userMatrix);
-                savedMatrix = (double[,])userMatrix.Clone();
+                savedMatrix = (double[,]) userMatrix.Clone();
                 Console.WriteLine(separationBar);
                 Console.WriteLine("\nYour matrix has been resaved!");
                 break;
@@ -173,7 +183,7 @@ while (true)
 
             case 9:
                 Console.WriteLine(separationBar);
-                Console.WriteLine($"\nEnter the entries for your second {numRows} by {numCols} matrix.\n\nYour original matrix will be multiplied with this new matrix.");
+                Console.WriteLine($"\nEnter the entries for your second {numRows} by {numCols} matrix.\n\nYour original matrix will be multiplied with this new matrix (Original Matrix X New Matrix).");
                 secondMatrix = new double[numRows, numCols];
                 InputEntries(secondMatrix);
                 userMatrix = MatrixMultiply(userMatrix, secondMatrix);
@@ -188,7 +198,9 @@ while (true)
                 break;
 
             case 11:
-                userMatrix = savedMatrix;
+                userMatrix = (double[,]) savedMatrix.Clone();
+                Console.WriteLine(separationBar);
+                Console.WriteLine("\nThe clock has rewound and time begins again!");
                 break;
 
             case 12:
