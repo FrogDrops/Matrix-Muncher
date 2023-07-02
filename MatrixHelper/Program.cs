@@ -222,7 +222,7 @@ while (true)
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 int randomQuote = rand.Next(0, farewell.Length);
                 Console.WriteLine(farewell[randomQuote]);
-
+                Console.ReadKey();
                 Console.ForegroundColor = ConsoleColor.White;
                 System.Environment.Exit(0);
                 break;
