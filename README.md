@@ -2,7 +2,7 @@
 
 A C# console application that serves as a lightweight matrix calculator for all your linear algebra needs!
 
-![muncher](https://github.com/FrogDrops/Matrix-Muncher/assets/130423129/45343e0d-e2c2-44bc-9dc3-4479ea7c5c97)
+![muncherPic](https://github.com/FrogDrops/Matrix-Muncher/assets/130423129/45343e0d-e2c2-44bc-9dc3-4479ea7c5c97)
 
 
 Matrix Muncher allows you to quickly perform operations and undo changes on your matrix as needed. It is focused on being both lenient with
@@ -20,6 +20,15 @@ It has the following features:
 
 Additionally, it is very much fraction and decimal friendly!
 
-![matrices](https://github.com/FrogDrops/Matrix-Muncher/assets/130423129/e0b9c50e-2554-43b1-809f-fc434a10307b)
+![menuPic](https://github.com/FrogDrops/Matrix-Muncher/assets/130423129/e0b9c50e-2554-43b1-809f-fc434a10307b)
+
+# Installation Information
 
 # [Download Release v1.0](https://github.com/FrogDrops/Matrix-Muncher/releases/tag/v1.0)
+
+Head down to the release and download the MatrixHelper zip file at the top. Afterwards, unzip it, double-click on the executable file, 
+and then you can start messing around with your matrix!
+
+Depending on how wary your computer is, it may mark the file as suspicious, which is normal! If you have any concerns or questions, please reach out to me.
+But it's a simple console application that's safe to use! Just tell the computer to execute the 
+program anyway, and enjoy <:
