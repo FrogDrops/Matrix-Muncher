@@ -2,7 +2,7 @@
 
 A C# console application that serves as a lightweight matrix calculator for all your linear algebra needs!
 
-![muncher](https://github.com/FrogDrops/Matrix-Muncher/assets/130423129/45343e0d-e2c2-44bc-9dc3-4479ea7c5c97)
+![muncherPic](https://github.com/FrogDrops/Matrix-Muncher/assets/130423129/45343e0d-e2c2-44bc-9dc3-4479ea7c5c97)
 
 
 Matrix Muncher allows you to quickly perform operations and undo changes on your matrix as needed. It is focused on being both lenient with
@@ -20,6 +20,39 @@ It has the following features:
 
 Additionally, it is very much fraction and decimal friendly!
 
-![matrices](https://github.com/FrogDrops/Matrix-Muncher/assets/130423129/e0b9c50e-2554-43b1-809f-fc434a10307b)
+![menuPic](https://github.com/FrogDrops/Matrix-Muncher/assets/130423129/e0b9c50e-2554-43b1-809f-fc434a10307b)
+
+Since the program relies on floating-point arithmetic, there may be minor precision errors. However, the results should stay correct.
+
+# Elementary Row Operations
+
+![rowOperations](https://github.com/FrogDrops/Matrix-Muncher/assets/130423129/562fce94-20b8-4f15-bd2a-7aab3a6fd0cd)
+
+You can perform any of the three elementary row operations on your matrix: swapping two rows, scaling a row, and adding a multiple 
+of one row to another. In such a way, you can practice attaining the row-reduced form without getting bogged down with algebraic mistakes.
+
+To add a multiple of one row to another, one must follow this format:
+
+r[first row number] [+/-] [scalar] * r[second row number]
+
+Which would then affect the first row. However, this format tries to be as flexible as it can in that the scalar can take the form of 
+a decimal as well as a fraction. The letter 'r' can also be capitalized if wanted. Examples of valid formats go as such:
+
+r1 + 2 * r2 (Applies across the whole first row)
+ 
+r3 - 1/5 * r1 (Applies across the whole third row)
+
+R1 + 3.5 * R3 (Applies across the whole first row)
+
+Note that, following the rules of this operation, one cannot add a multiple of one row to the same row.
+
+# Installation Information
 
 # [Download Release v1.0](https://github.com/FrogDrops/Matrix-Muncher/releases/tag/v1.0)
+
+Head down to the release, and download the MatrixHelper zip file at the top. Afterwards, unzip it, double-click on the executable file, 
+and then you can start messing around with your matrix!
+
+Depending on how wary your computer is, it may mark the file as suspicious, which is normal! If you have any concerns or questions, please reach out to me.
+But it's a simple console application that's safe to use! Just tell the computer to execute the 
+program anyway, and enjoy <:
